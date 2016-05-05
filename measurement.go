@@ -6,29 +6,24 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
-)
-
-var (
-	// XX-XXXXXXX-X
-	TrackingID = ""
 )
 
 const (
-	gaAPIURL = "http://www.google-analytics.com/collect"
+	gaAPIDebugURL = "http://www.google-analytics.com/debug/collect"
+	gaAPIURL      = "http://www.google-analytics.com/collect"
 )
 
-func send(data url.Values) error {
-	client := &http.Client{}
+type GA struct {
+	// XX-XXXXXXX-X
+	TrackingID string
+}
 
-	req, err := http.NewRequest("POST", gaAPIURL, strings.NewReader(data.Encode()))
+func (g *GA) send(data url.Values) error {
+	resp, err := http.PostForm(gaAPIURL, data)
 	if err != nil {
 		return err
 	}
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("User-Agent", "ga-measurements")
 
-	resp, err := client.Do(req)
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
@@ -44,18 +39,17 @@ func send(data url.Values) error {
 // documentHost - example.com
 // page - /foo/bar
 // title - the foobar page
-func Pageview(cid, documentHost, page, title string) error {
-	data := url.Values{
-		"v":   {"1"},
-		"tid": {TrackingID},
-		"cid": {cid},
-		"t":   {"pageview"},
-		"dh":  {documentHost},
-		"dp":  {page},
-		"dt":  {title},
-	}
+func (g *GA) Pageview(cid, documentHost, page, title string) error {
+	data := url.Values{}
+	data.Add("v", "1")
+	data.Add("tid", g.TrackingID)
+	data.Add("cid", cid)
+	data.Add("t", "pageview")
+	data.Add("dh", documentHost)
+	data.Add("dp", page)
+	data.Add("dt", title)
 
-	return send(data)
+	return g.send(data)
 }
 
 // Event sends an event hit type.
@@ -65,19 +59,23 @@ func Pageview(cid, documentHost, page, title string) error {
 // action - event action
 // label - event label
 // value - event value
-func Event(cid, category, action, label, value string) error {
-	data := url.Values{
-		"v":   {"1"},
-		"tid": {TrackingID},
-		"cid": {cid},
-		"t":   {"event"},
-		"ec":  {category},
-		"ea":  {action},
-		"el":  {label},
-		"ev":  {value},
+func (g *GA) Event(cid, category, action, label, value string) error {
+	data := url.Values{}
+	data.Add("v", "1")
+	data.Add("tid", g.TrackingID)
+	data.Add("cid", cid)
+	data.Add("t", "event")
+	data.Add("ec", category)
+	data.Add("ea", action)
+
+	if label != "" {
+		data.Add("el", label)
+	}
+	if value != "" {
+		data.Add("ev", value)
 	}
 
-	return send(data)
+	return g.send(data)
 }
 
 // Purchase
