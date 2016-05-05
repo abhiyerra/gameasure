@@ -58,6 +58,13 @@ func Pageview(cid, documentHost, page, title string) error {
 	return send(data)
 }
 
+// Event sends an event hit type.
+//
+// cid - client id
+// category - event category
+// action - event action
+// label - event label
+// value - event value
 func Event(cid, category, action, label, value string) error {
 	data := url.Values{
 		"v":   {"1"},
@@ -74,6 +81,7 @@ func Event(cid, category, action, label, value string) error {
 }
 
 // Purchase
+
 // Transaction
 // Item
 // Refund
