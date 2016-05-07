@@ -1,6 +1,6 @@
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide#page
 
-package measurement
+package gmeasure
 
 import (
 	"fmt"
