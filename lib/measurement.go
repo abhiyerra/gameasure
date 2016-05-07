@@ -1,4 +1,9 @@
-// https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide#page
+/* Copyright (C) 2016 Acksin <hey@acksin.com>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 package gmeasure
 
@@ -52,6 +57,19 @@ func (g *GA) Pageview(cid, documentHost, page, title string) error {
 	return g.send(data)
 }
 
+type Base struct {
+	Cid string
+}
+
+type Event struct {
+	Base
+
+	Category string
+	Action   string
+	Label    string
+	Value    string
+}
+
 // Event sends an event hit type.
 //
 // cid - client id
@@ -59,20 +77,20 @@ func (g *GA) Pageview(cid, documentHost, page, title string) error {
 // action - event action
 // label - event label
 // value - event value
-func (g *GA) Event(cid, category, action, label, value string) error {
+func (g *GA) Event(e Event) error {
 	data := url.Values{}
 	data.Add("v", "1")
 	data.Add("tid", g.TrackingID)
-	data.Add("cid", cid)
+	data.Add("cid", e.Cid)
 	data.Add("t", "event")
-	data.Add("ec", category)
-	data.Add("ea", action)
+	data.Add("ec", e.Category)
+	data.Add("ea", e.Action)
 
-	if label != "" {
-		data.Add("el", label)
+	if e.Label != "" {
+		data.Add("el", e.Label)
 	}
-	if value != "" {
-		data.Add("ev", value)
+	if e.Value != "" {
+		data.Add("ev", e.Value)
 	}
 
 	return g.send(data)
