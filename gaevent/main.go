@@ -14,19 +14,16 @@ import (
 )
 
 func main() {
-	var (
-		e   = gmeasure.Event{}
-		tid string
-	)
+	e := gmeasure.Event{}
 
 	flag.StringVar(&e.Category, "category", "", "Event category")
 	flag.StringVar(&e.Action, "action", "", "Event action")
 	flag.StringVar(&e.Label, "label", "", "Event label")
 	flag.StringVar(&e.Value, "value", "", "Event value")
-	flag.StringVar(&e.Cid, "clientid", "", "Client ID")
-	flag.StringVar(&tid, "trackingid", "", "Google Analytics Tracking ID. XX-XXXXXXX-X")
+	flag.StringVar(&e.ClientID, "clientid", "", "Client ID")
+	flag.StringVar(&e.TrackingID, "trackingid", "", "Google Analytics Tracking ID. XX-XXXXXXX-X")
 	flag.Parse()
 
-	ga := gmeasure.GA{TrackingID: tid}
+	ga := gmeasure.GA{TrackingID: e.TrackingID}
 	ga.Event(e)
 }
