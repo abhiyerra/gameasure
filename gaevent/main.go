@@ -10,11 +10,11 @@ package main
 import (
 	"flag"
 
-	"github.com/acksin/gmeasure/lib"
+	"github.com/acksin/gameasure/lib"
 )
 
 func main() {
-	e := gmeasure.Event{}
+	e := gameasure.Event{}
 
 	flag.StringVar(&e.Category, "category", "", "Event category")
 	flag.StringVar(&e.Action, "action", "", "Event action")
@@ -24,6 +24,6 @@ func main() {
 	flag.StringVar(&e.TrackingID, "trackingid", "", "Google Analytics Tracking ID. XX-XXXXXXX-X")
 	flag.Parse()
 
-	ga := gmeasure.GA{TrackingID: e.TrackingID}
+	ga := gameasure.GA{TrackingID: e.TrackingID}
 	ga.Event(e)
 }

@@ -1,4 +1,4 @@
-package gmeasure
+package gameasure
 
 import (
 	"net/url"
