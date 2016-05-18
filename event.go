@@ -16,6 +16,7 @@ type Event struct {
 	Value string `ga:"ev"`
 }
 
+// Event sends events to Google Analytics
 func (g *GA) Event(e Event) error {
 	data := url.Values{}
 

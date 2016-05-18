@@ -2,11 +2,17 @@
 
 [![GoDoc](https://godoc.org/github.com/acksin/gameasure?status.svg)](https://godoc.org/github.com/acksin/gameasure)
 
-Use the
+[Google Analytics](https://analytics.google.com) is actually a pretty
+powerful event tracking system allowing you to track events, timing
+tasks, exceptions along with the traditional pageviews. We use the
 [Google Analytics Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide#page)
-to track events.
+to send events to analytics.
 
 ## Usage
+
+Check out the GoDocs but usage is simple. Create a new GA object with
+`gameasure.New` passing the TrackingID and an anonymous ClientID which
+can be any value. Then use the object to send events.
 
 ```
 ga := gameasure.New("UA-XXXXXXX-X", "1231231234")
@@ -16,3 +22,9 @@ ga.Event(gameasure.Event{
     Label:    "Invoking Food to Eat",
 })
 ```
+
+Other supported events are:
+
+  - `UserTiming`
+  - `Pageview`
+  - `Exception`

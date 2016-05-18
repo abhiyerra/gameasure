@@ -17,6 +17,7 @@ type UserTiming struct {
 	Label string `ga:"utl"`
 }
 
+// UserTiming sends user timings to Google Analytics
 func (g *GA) UserTiming(e UserTiming) error {
 	data := url.Values{}
 

@@ -18,19 +18,21 @@ const (
 	gaAPIURL      = "http://www.google-analytics.com/collect"
 )
 
+// GA is how we send events to Google Analytics
 type GA struct {
 	// XX-XXXXXXX-X
 	TrackingID string `ga:"tid"`
 	// ClientID is the Anonymous ID
 	ClientID string `ga:"cid"`
 
-	HitType string `ga:"t"`
+	hitType string `ga:"t"`
 }
 
-func New(trackingId, clientId string) *GA {
+// New creates a new GA object with the trackingID and clientID.
+func New(trackingID, clientID string) *GA {
 	return &GA{
-		TrackingID: trackingId,
-		ClientID:   clientId,
+		TrackingID: trackingID,
+		ClientID:   clientID,
 	}
 }
 

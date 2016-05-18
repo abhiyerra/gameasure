@@ -12,6 +12,7 @@ type Exception struct {
 	Fatal bool `ga:"exf"`
 }
 
+// Exception sends exceptions to Google Analytics
 func (g *GA) Exception(e Exception) error {
 	data := url.Values{}
 

@@ -14,6 +14,7 @@ type Pageview struct {
 	Title string `ga:"dt"`
 }
 
+// Pageview sends pageviews to Google Analytics
 func (g *GA) Pageview(p Pageview) error {
 	data := url.Values{}
 
