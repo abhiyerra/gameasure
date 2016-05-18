@@ -10,6 +10,7 @@ package gameasure
 import (
 	"net/url"
 	"strconv"
+	"time"
 )
 
 // UserTiming sends a timing hit type.
@@ -19,9 +20,21 @@ type UserTiming struct {
 	// Variable is the timing variable. e.g. load
 	Variable string `ga:"utv"`
 	// Time is the time it took in milliseconds.
-	Time int `ga:"utt"`
+	Time time.Duration `ga:"utt"`
 	// Label is the timing label. e.g jQuery
 	Label string `ga:"utl"`
+
+	startTime time.Time
+}
+
+// Begin starts the timer.
+func (u *UserTiming) Begin() {
+	u.startTime = time.Now()
+}
+
+// Calculate the timing
+func (u *UserTiming) End() {
+	u.Time = time.Since(u.startTime)
 }
 
 // UserTiming sends user timings to Google Analytics
@@ -31,7 +44,7 @@ func (g *GA) UserTiming(e UserTiming) error {
 	data.Add("t", "timing")
 	data.Add("utc", e.Category)
 	data.Add("utv", e.Variable)
-	data.Add("utt", strconv.Itoa(e.Time))
+	data.Add("utt", strconv.FormatInt(int64(e.Time), 64))
 	data.Add("utl", e.Label)
 
 	return g.send(data)

@@ -23,6 +23,25 @@ ga.Event(gameasure.Event{
 })
 ```
 
+Sending Timing Events:
+
+```
+ga := &gameasure.New("UA-XXXXXXX-X", "1231231234")
+t := UserTiming{
+        Category: "Subscription",
+        Variable: "Subscribe",
+        Label: "Stripe"
+}
+t.Begin()
+defer func() {
+        t.End()
+        go ga.UserTiming(t)
+}()
+
+// Do Stuff
+```
+
+
 Other supported events are:
 
   - `UserTiming`
