@@ -8,8 +8,8 @@
 package gameasure
 
 import (
+	"fmt"
 	"net/url"
-	"strconv"
 	"time"
 )
 
@@ -44,7 +44,8 @@ func (g *GA) UserTiming(e UserTiming) error {
 	data.Add("t", "timing")
 	data.Add("utc", e.Category)
 	data.Add("utv", e.Variable)
-	data.Add("utt", strconv.FormatInt(int64(e.Time), 64))
+
+	data.Add("utt", fmt.Sprintf("%d", int64(e.Time.Seconds()*1000)))
 	data.Add("utl", e.Label)
 
 	return g.send(data)
