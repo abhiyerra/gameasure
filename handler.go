@@ -1,7 +1,10 @@
 package gameasure
 
 import (
+	"fmt"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/satori/go.uuid"
 )
@@ -29,7 +32,9 @@ func gaClientID(r *http.Request) string {
 // gameasure.NewGAHandler(r, trackerIds)
 type GAHandler struct {
 	TrackerIDs map[string]string
-	handler    http.Handler
+	// TODO
+	IgnorePaths []string
+	handler     http.Handler
 }
 
 // pageview records a pageview.
@@ -39,13 +44,14 @@ func (s *GAHandler) pageview(clientID, host, path string) {
 		gaID = s.TrackerIDs["default"]
 	}
 
-	if gaId != "" {
+	if gaID != "" {
+		// TODO: log should be a handler param.
 		log.Println("No TrackingID for Host:", host)
 		return
 	}
 
 	if clientID == "" {
-		clientId = uuid.NewV4()
+		clientID = fmt.Sprintf("%s", uuid.NewV4())
 	}
 
 	New(gaID, clientID).Pageview(Pageview{
