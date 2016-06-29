@@ -44,7 +44,7 @@ func (s *GAHandler) pageview(clientID, host, path string) {
 		gaID = s.TrackerIDs["default"]
 	}
 
-	if gaID != "" {
+	if gaID == "" {
 		// TODO: log should be a handler param.
 		log.Println("No TrackingID for Host:", host)
 		return
