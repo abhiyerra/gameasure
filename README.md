@@ -64,6 +64,15 @@ Other supported events are:
   - `Pageview`
   - `Exception`
 
+
+## Project of Acksin
+
+This is a project of
+[Acksin](https://www.acksin.com/parkingspot?utm_source=github&utm_medium=readme&utm_campaign=oss). Acksin
+provides tools to make your infrastructure more efficient and cost
+effective. Check out our spot instance bidding tool
+[ParkingSpot](https://www.acksin.com/parkingspot?utm_source=github&utm_medium=readme&utm_campaign=oss).
+
 ## License
 
 Copyright (C) 2016 Acksin <hey@acksin.com>
