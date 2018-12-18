@@ -9,6 +9,7 @@ package gameasure
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -41,10 +42,15 @@ func (g *GA) send(data url.Values) error {
 	data.Add("tid", g.TrackingID)
 	data.Add("cid", g.ClientID)
 
+	fmt.Println(data)
+
 	resp, err := http.PostForm(gaAPIURL, data)
 	if err != nil {
 		return err
 	}
+
+	b, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(b))
 
 	defer resp.Body.Close()
 

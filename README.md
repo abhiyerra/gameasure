@@ -49,12 +49,7 @@ r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
   w.Write([]byte("OK"))
 })
 
-trackerIds := map[string]string{
-    "api.acksin.com":  "UA-XXXXXXX-1",
-    "default":         "UA-XXXXXXX-2",
-}
-
-http.ListenAndServe(":8080", gameasure.NewGAHandler(r, trackerIds))
+http.ListenAndServe(":8080", gameasure.NewGAHandler(r, "UA-XXXXXXX-1", []string{"/health"}, true))
 ```
 
 

@@ -2,7 +2,6 @@ package gameasure
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -24,37 +23,25 @@ func gaClientID(r *http.Request) string {
 
 // GAHandler is a middleware which logs backend requests to Google
 // Analytics.
-//
-// trackerIds := map[string]string{
-// 	"api.acksin.com":  "UA-XXXXXXX-1",
-// 	"default":         "UA-XXXXXXX-2",
-// }
-// gameasure.NewGAHandler(r, trackerIds)
 type GAHandler struct {
-	TrackerIDs map[string]string
-	// TODO
+	TrackerID string
+	// IgnorePaths are a list of paths that should be ignored from
+	// being tracked such as /health
 	IgnorePaths []string
-	handler     http.Handler
+	// TimingOnly specifies if we want to only record UserTiming
+	// events.
+	TimingOnly bool
+
+	handler http.Handler
 }
 
 // pageview records a pageview.
 func (s *GAHandler) pageview(clientID, host, path string) {
-	gaID, ok := s.TrackerIDs[host]
-	if !ok {
-		gaID = s.TrackerIDs["default"]
-	}
-
-	if gaID == "" {
-		// TODO: log should be a handler param.
-		log.Println("No TrackingID for Host:", host)
-		return
-	}
-
 	if clientID == "" {
 		clientID = fmt.Sprintf("%s", uuid.NewV4())
 	}
 
-	New(gaID, clientID).Pageview(Pageview{
+	New(s.TrackerID, clientID).Pageview(Pageview{
 		DocumentHost: host,
 		Page:         path,
 		Title:        path,
@@ -65,7 +52,36 @@ func (s *GAHandler) pageview(clientID, host, path string) {
 // goroutine to Google Analytics.
 func (s *GAHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "OPTIONS" {
-		go s.pageview(gaClientID(r), r.Host, r.RequestURI)
+		ignorePageview := false
+
+		for _, ignorePath := range s.IgnorePaths {
+			if strings.Contains(r.RequestURI, ignorePath) {
+				ignorePageview = true
+				break
+			}
+		}
+
+		if !ignorePageview {
+			ut := &UserTiming{
+				Category: fmt.Sprintf("%s %s", r.Method, r.RequestURI),
+				Variable: "Speed",
+				Label:    fmt.Sprintf("%s %s", r.Method, r.RequestURI),
+			}
+			ut.Begin()
+			defer func() {
+				ut.End()
+				clientID := gaClientID(r)
+				if clientID == "" {
+					clientID = fmt.Sprintf("%s", uuid.NewV4())
+				}
+
+				go New(s.TrackerID, clientID).UserTiming(ut)
+			}()
+
+			if !s.TimingOnly {
+				go s.pageview(gaClientID(r), r.Host, r.RequestURI)
+			}
+		}
 	}
 
 	s.handler.ServeHTTP(w, r)
@@ -73,14 +89,11 @@ func (s *GAHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // NewGAHandler creates a new GAHandler. Pass in a map of the Host to
 // TrackingID. Pass a default key for a default trackingid
-//
-// trackerIds := map[string]string{
-// 	"api.acksin.com":  "UA-XXXXXXX-1",
-// 	"default":         "UA-XXXXXXX-2",
-// }
-func NewGAHandler(handler http.Handler, trackerIds map[string]string) *GAHandler {
+func NewGAHandler(handler http.Handler, trackerID string, ignorePaths []string, timingOnly bool) *GAHandler {
 	return &GAHandler{
-		handler:    handler,
-		TrackerIDs: trackerIds,
+		handler:     handler,
+		TrackerID:   trackerID,
+		IgnorePaths: ignorePaths,
+		TimingOnly:  timingOnly,
 	}
 }

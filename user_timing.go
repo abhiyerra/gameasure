@@ -38,7 +38,7 @@ func (u *UserTiming) End() {
 }
 
 // UserTiming sends user timings to Google Analytics
-func (g *GA) UserTiming(e UserTiming) error {
+func (g *GA) UserTiming(e *UserTiming) error {
 	data := url.Values{}
 
 	data.Add("t", "timing")
